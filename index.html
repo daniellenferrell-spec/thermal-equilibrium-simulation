@@ -1,0 +1,53 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Thermal Equilibrium Virtual Lab</title>
+<style>
+:root{--red:#e53935;--blue:#2563eb;--ink:#18212f;--muted:#667085;--line:#d0d5dd;--panel:#f8fafc}
+*{box-sizing:border-box} body{margin:0;font-family:Arial,Helvetica,sans-serif;color:var(--ink);background:#fff}
+.wrap{max-width:980px;margin:auto;padding:24px}.top{display:flex;justify-content:space-between;gap:18px;align-items:center;flex-wrap:wrap}
+h1{margin:0 0 6px;font-size:30px}.sub{margin:0;color:var(--muted)}.time{border:2px solid var(--line);border-radius:14px;padding:10px 20px;text-align:center;min-width:140px}.time b{font-size:28px;display:block}
+.cups{display:grid;grid-template-columns:1fr 1fr;gap:24px;margin:28px 0}.card{border:2px solid var(--line);border-radius:18px;padding:18px;text-align:center}.hot{border-color:#f5a3a0}.cold{border-color:#93b7fa}
+.card h2{margin:0 0 6px}.temp{font-size:34px;font-weight:800;margin:8px}.hot .temp,.hot h2{color:var(--red)}.cold .temp,.cold h2{color:var(--blue)}
+.cup{width:150px;height:190px;margin:18px auto 8px;border:7px solid #b8c0cc;border-top:0;border-radius:0 0 28px 28px;position:relative;overflow:hidden;background:#fff}
+.water{position:absolute;left:0;right:0;bottom:0;height:82%}.hot .water{background:var(--red)}.cold .water{background:var(--blue)}
+.label{position:absolute;top:15px;left:0;right:0;font-weight:800;color:#fff;text-shadow:0 1px 2px #000}
+.controls{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:18px;text-align:center}.message{font-weight:700;margin-bottom:14px}
+button{font-size:18px;font-weight:700;border:0;border-radius:12px;padding:13px 20px;margin:4px;cursor:pointer}.advance{background:#111827;color:#fff}.reset{background:#e5e7eb;color:#111827}button:disabled{opacity:.45;cursor:not-allowed}
+table{width:100%;border-collapse:collapse;margin-top:26px;font-size:18px}th,td{padding:11px;border-bottom:1px solid var(--line);text-align:center}th:nth-child(2),td:nth-child(2){color:var(--red)}th:nth-child(3),td:nth-child(3){color:var(--blue)}
+.finish{display:none;margin-top:20px;border:2px solid #65a30d;border-radius:16px;padding:18px;text-align:center;background:#f7fee7}.finish h2{margin:0 0 8px}
+.note{margin-top:18px;color:var(--muted);font-size:13px;text-align:center}
+@media(max-width:650px){.cups{grid-template-columns:1fr}.wrap{padding:15px}h1{font-size:24px}}
+</style>
+</head>
+<body>
+<main class="wrap">
+<div class="top"><div><h1>Thermal Equilibrium Investigation</h1><p class="sub">Observe how hot and cold water change temperature over 30 minutes.</p></div><div class="time"><small>ELAPSED TIME</small><b id="time">0 min</b></div></div>
+<div class="cups">
+<section class="card hot"><h2>HOT WATER</h2><div class="temp" id="hot">110°F</div><div class="cup"><div class="water"></div><div class="label">CUP A</div></div></section>
+<section class="card cold"><h2>COLD WATER</h2><div class="temp" id="cold">50°F</div><div class="cup"><div class="water"></div><div class="label">CUP B</div></div></section>
+</div>
+<section class="controls"><div class="message" id="message">0 minutes — record both starting temperatures.</div><button class="advance" id="advance">Advance 5 Minutes</button><button class="reset" id="reset">Restart</button></section>
+<table aria-label="Class data table"><thead><tr><th>Time</th><th>Hot Water</th><th>Cold Water</th></tr></thead><tbody id="rows"></tbody></table>
+<section class="finish" id="finish"><h2>Thermal Equilibrium Reached!</h2><div>At 30 minutes, both cups are <b>73°F</b>.</div><p><b>Think:</b> What happened to the thermal energy as the temperatures changed?</p></section>
+<div class="note">Classroom simulation • Temperatures are predetermined for this model.</div>
+</main>
+<script>
+const readings=[{t:0,h:110,c:50},{t:5,h:96,c:58},{t:10,h:87,c:64},{t:15,h:81,c:68},{t:20,h:77,c:71},{t:25,h:74,c:72},{t:30,h:73,c:73}];
+let step=0;
+const $=id=>document.getElementById(id);
+function render(){
+ const r=readings[step];
+ $("time").textContent=r.t+" min"; $("hot").textContent=r.h+"°F"; $("cold").textContent=r.c+"°F";
+ $("rows").innerHTML=readings.slice(0,step+1).map(x=>`<tr><td>${x.t} min</td><td>${x.h}°F</td><td>${x.c}°F</td></tr>`).join("");
+ $("message").textContent=step===0?"0 minutes — record both starting temperatures.":step<6?`PAUSED at ${r.t} minutes — record both temperatures before continuing.`:"30 minutes — compare the final temperatures!";
+ $("advance").disabled=step===6; $("advance").textContent=step===6?"Simulation Complete":"Advance 5 Minutes";
+ $("finish").style.display=step===6?"block":"none";
+}
+$("advance").addEventListener("click",()=>{if(step<6){step++;render()}});
+$("reset").addEventListener("click",()=>{step=0;render()});
+render();
+</script>
+</body></html>
